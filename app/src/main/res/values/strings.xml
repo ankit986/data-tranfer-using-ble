@@ -1,0 +1,6 @@
+<resources>
+    <string name="app_name">Scan Nearby Devices</string>
+    <string name="central_btn">Central</string>
+    <string name="peripherla_btn">Peripheral</string>
+    <string name="choose_device_role">Choose The Role of The Device</string>
+</resources>
