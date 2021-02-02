@@ -167,12 +167,12 @@ public class DeviceConnectActivity extends AppCompatActivity implements View.OnC
                 case CentralService.ACTION_GATT_CONNECTED:
                     Log.d(TAG, "onReceive: GATT CONNECTED");
 
-                    updateConnectionState(1); // Connected = 1
+                    updateConnectionState("Connected"); // Connected = 1
                     requestCharacteristicBtn.setEnabled(true);
                     break;
                 case CentralService.ACTION_GATT_DISCONNECTED:
                     Log.d(TAG, "onReceive: GATT DISCONNECTED");
-                    updateConnectionState(2);  // DisConnected = 2
+                    updateConnectionState("Disconnected");  // DisConnected = 2
                     requestCharacteristicBtn.setEnabled(false);
                     break;
                 case CentralService.ACTION_SERVICE_DISCOVERED:
@@ -205,11 +205,11 @@ public class DeviceConnectActivity extends AppCompatActivity implements View.OnC
         return intentFilter;
     }
 
-    private void updateConnectionState(final int resourceId){
+    private void updateConnectionState(final String status){
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                connectionStatus.setText(String.valueOf(resourceId));
+                connectionStatus.setText(String.valueOf(status));
             }
         });
     }

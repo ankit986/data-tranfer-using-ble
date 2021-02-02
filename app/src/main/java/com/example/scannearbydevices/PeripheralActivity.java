@@ -34,7 +34,6 @@ public class PeripheralActivity extends AppCompatActivity implements View.OnClic
 
     private Button notifyBtn;
     private Switch enableAdvertisementSwitch;
-    private RadioGroup characteristicValueSwitch;
     private EditText editTextInsulinLevel;
 
     private BluetoothManager bluetoothManager;
@@ -52,18 +51,10 @@ public class PeripheralActivity extends AppCompatActivity implements View.OnClic
 
         notifyBtn = (Button )  findViewById(R.id.notifyBtn);
         enableAdvertisementSwitch = (Switch) findViewById(R.id.advertisementSwitch);
-        characteristicValueSwitch = (RadioGroup) findViewById(R.id.dataRadioGroup);
         editTextInsulinLevel = (EditText) findViewById(R.id.editTextInsulinLevel);
 
         notifyBtn.setOnClickListener(this);
         enableAdvertisementSwitch.setOnClickListener(this);
-
-//        characteristicValueSwitch.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-//            @Override
-//            public void onCheckedChanged(RadioGroup group, int checkedId) {
-//                setCharacterstic(checkedId);
-//            }
-//        });
 
         setGattServer();
         setBluetoothService();
@@ -80,8 +71,8 @@ public class PeripheralActivity extends AppCompatActivity implements View.OnClic
                     stopAdvertising();
                 break;
             case R.id.notifyBtn:
-                notifyCharactersticChanged();
-                setCharacterstic();
+                setCharacteristic();
+                notifyCharacteristicChanged();
                 break;
         }
     }
@@ -107,7 +98,7 @@ public class PeripheralActivity extends AppCompatActivity implements View.OnClic
         bluetoothGattService = new BluetoothGattService(INSULIN_PUMP_SERVICE_UUID, BluetoothGattService.SERVICE_TYPE_PRIMARY);
 
         bluetoothGattCharacteristic = new BluetoothGattCharacteristic(BODY_LOCATION_CHARACTERISTIC_UUID, BluetoothGattCharacteristic.PROPERTY_NOTIFY|BluetoothGattCharacteristic.PROPERTY_READ, BluetoothGattCharacteristic.PERMISSION_READ );
-        setCharacterstic();
+        setCharacteristic();
 
         bluetoothGattService.addCharacteristic(bluetoothGattCharacteristic);
 
@@ -121,17 +112,13 @@ public class PeripheralActivity extends AppCompatActivity implements View.OnClic
 
     }
 
-    public void setCharacterstic() {
-        setCharacterstic(R.id.radio1);
+    public void setCharacteristic() {
+        Log.d(TAG, editTextInsulinLevel.getText().toString());
+        String textString = editTextInsulinLevel.getText().toString();
+        byte[] strBytes =textString.getBytes();
+        bluetoothGattCharacteristic.setValue(strBytes);
     }
 
-    public void setCharacterstic(int checkedId) {
-        int value = checkedId == R.id.radio1 ? SERVER_MSG_FIRST_STATE : SERVER_MSG_SECOND_STATE;
-//        bluetoothGattCharacteristic.setValue(  new byte[]{(byte) value});
-        Log.d(TAG, editTextInsulinLevel.getText().toString());
-        int dataToTransfer = Integer.parseInt(editTextInsulinLevel.getText().toString());
-        bluetoothGattCharacteristic.setValue(new byte[]{(byte) dataToTransfer});
-    }
 
     private void startAdvertising(){
         startService(new Intent(this, PeripheralAdvertisingService.class));
@@ -142,7 +129,7 @@ public class PeripheralActivity extends AppCompatActivity implements View.OnClic
         enableAdvertisementSwitch.setChecked(false);
     }
 
-    private void notifyCharactersticChanged(){
+    private void notifyCharacteristicChanged(){
         for(BluetoothDevice device : bluetoothDevices){
             if(bluetoothGattServer !=null)
                     bluetoothGattServer.notifyCharacteristicChanged(device, bluetoothGattCharacteristic, true);

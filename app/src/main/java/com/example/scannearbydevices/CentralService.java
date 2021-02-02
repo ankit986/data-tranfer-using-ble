@@ -15,6 +15,7 @@ import android.os.Binder;
 import android.os.IBinder;
 import android.util.Log;
 
+import java.nio.charset.Charset;
 import java.util.List;
 
 import static com.example.scannearbydevices.Constants.BODY_LOCATION_CHARACTERISTIC_UUID;
@@ -142,21 +143,14 @@ public class CentralService extends Service {
                 Log.d(TAG, "data format UINT18.");
             }
 
-            byte[] msg = characteristic.getValue();
             byte[] data = characteristic.getValue();
             if (data != null && data.length > 0) {
-                final StringBuilder stringBuilder = new StringBuilder(data.length);
-                for(byte byteChar : data) {
-                    Log.d(TAG, "broadcastUpdate: DATA "+byteChar);
-                    stringBuilder.append(byteChar);
-                }
-                intent.putExtra(EXTRA_DATA, stringBuilder.toString());
-            Log.d(TAG, "broadcastUpdate: RECCCC"+stringBuilder);
-            }
-//            String msg = characteristic.getStringValue(format);
-//            Log.d(TAG, String.format("message:  RECIEVED %d"+msg));
 
-//            intent.putExtra(EXTRA_DATA, msg);
+                String sendingData = new String(data, Charset.forName("UTF-8"));
+                intent.putExtra(EXTRA_DATA, sendingData);
+            Log.d(TAG, "broadcastUpdate: Data Sent"+sendingData);
+            }
+
         }
         else{
             intent.putExtra(EXTRA_DATA, "Sending Data From CS for other than BodyLocationCharacteristic");
